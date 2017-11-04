@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "qBittorrentSharp", "qBittorrentSharp\qBittorrentSharp.csproj", "{F9C9E653-9CFB-4E42-B6BD-B7E75A0E7DDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "qBittorrentSharp", "qBittorrentSharp\qBittorrentSharp.csproj", "{F9C9E653-9CFB-4E42-B6BD-B7E75A0E7DDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{AA162380-957E-410F-8307-5B8590FC74A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{F9C9E653-9CFB-4E42-B6BD-B7E75A0E7DDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9C9E653-9CFB-4E42-B6BD-B7E75A0E7DDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9C9E653-9CFB-4E42-B6BD-B7E75A0E7DDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA162380-957E-410F-8307-5B8590FC74A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA162380-957E-410F-8307-5B8590FC74A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA162380-957E-410F-8307-5B8590FC74A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA162380-957E-410F-8307-5B8590FC74A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
