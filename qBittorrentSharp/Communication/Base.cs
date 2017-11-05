@@ -14,38 +14,28 @@ namespace qBittorrentSharp
             try
             {
                 var reply = await client.GetAsync(requestUri);
-                if (!reply.IsSuccessStatusCode)
-                    throw new UnauthorizedAccessException();
-                return reply;
-            }
+				if (!reply.IsSuccessStatusCode)
+					throw new HttpRequestException(reply.ReasonPhrase);
+				return reply;
+			}
 
-            catch (HttpRequestException)
-            {
-                return null;
-            }
-
-            catch (UnauthorizedAccessException)
-            {
-                return null;
-            }
-        }
+			catch (HttpRequestException)
+			{
+				return null;
+			}
+		}
 
         private static async Task<HttpResponseMessage> Post(HttpClient client, string requestUri, FormUrlEncodedContent content = null)
         {
             try
             {
                 var reply = await client.PostAsync(requestUri, content);
-                if (!reply.IsSuccessStatusCode)
-                    throw new UnauthorizedAccessException();
-                return reply;
+				if (!reply.IsSuccessStatusCode)
+                    throw new HttpRequestException(reply.ReasonPhrase);
+				return reply;
             }
 
             catch (HttpRequestException)
-            {
-                return null;
-            }
-
-            catch (UnauthorizedAccessException)
             {
                 return null;
             }
@@ -56,20 +46,35 @@ namespace qBittorrentSharp
             try
             {
                 var reply = await client.PostAsync(requestUri, content);
-                if (!reply.IsSuccessStatusCode)
-                    throw new UnauthorizedAccessException();
-                return reply;
-            }
+				if (!reply.IsSuccessStatusCode)
+					throw new HttpRequestException(reply.ReasonPhrase);
+				return reply;
+			}
 
-            catch (HttpRequestException)
-            {
-                return null;
-            }
+			catch (HttpRequestException)
+			{
+				return null;
+			}
+		}
 
-            catch (UnauthorizedAccessException)
-            {
-                return null;
-            }
-        }
-    }
+		private static string ListToString(List<string> stringList , char separator)
+		{
+			string returnString = "";
+			foreach (string element in stringList)
+				returnString += element + separator;
+			returnString = returnString.Remove(returnString.Length - 1);
+
+			return returnString;
+		}
+
+		private static string ListToString(List<Uri> uris, char separator)
+		{
+			string returnString = "";
+			foreach (Uri element in uris)
+				returnString += element.ToString() + separator;
+			returnString = returnString.Remove(returnString.Length - 1);
+
+			return returnString;
+		}
+	}
 }

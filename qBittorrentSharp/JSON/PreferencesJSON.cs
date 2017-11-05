@@ -3,7 +3,7 @@ using qBittorrentSharp.Enums;
 
 namespace qBittorrentSharp.JSON
 {
-    public class Preferences
+    public class PreferencesJSON
     {
         [JsonProperty("locale")]
         public string Locale { get; set; }

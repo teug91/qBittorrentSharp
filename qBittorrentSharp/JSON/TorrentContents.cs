@@ -1,4 +1,5 @@
-﻿/*using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using qBittorrentSharp.Enums;
 
 namespace qBittorrentSharp.JSON
 {
@@ -14,20 +15,12 @@ namespace qBittorrentSharp.JSON
         public float Progress { get; set; }
 
         [JsonProperty("priority")]
-        public int Priority { get; set; }
+        public Priority Priority { get; set; }
 
         [JsonProperty("is_seed")]
         public bool Is_seed { get; set; }
 
         [JsonProperty("piece_range")]
-        public int Piece_range { get; set; }
+        public int[] Piece_range { get; set; }
     }
-
-    public enum Priorities
-    {
-        DoNotDownload = 0,
-        NormalPriority = 1,
-        HighPriority = 6,
-        MaximalPriority = 7
-    };
-}*/
+}

@@ -8,6 +8,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using qBittorrentSharp.JSON;
+using System.Diagnostics;
+using System.IO;
+using qBittorrentSharp.Enums;
+using Newtonsoft.Json.Linq;
 
 namespace qBittorrentSharp
 {
@@ -160,46 +164,33 @@ namespace qBittorrentSharp
             return urls;
         }
 
-        /*public async Task<TorrentContents> GetTorrentContents(string hash)
+        public async Task<List<TorrentContents>> GetTorrentContents(string hash)
         {
-            HttpResponseMessage reply = await Base.Post(client, "/query/propertiesFiles/" + hash);
+            HttpResponseMessage reply = await Post(client, "/query/propertiesFiles/" + hash);
 
             var result = await reply.Content.ReadAsStringAsync();
 
             if (reply == null)
                 return null;
 
-            return JsonConvert.DeserializeObject<TorrentContents>(await reply.Content.ReadAsStringAsync());
-        }*/
+            var array = JsonConvert.DeserializeObject<TorrentContents[]>(await reply.Content.ReadAsStringAsync());
+			return new List<TorrentContents>(array);
+        }
 
-        /*public async Task<PieceStates[]> GetTorrentPiecesStates(string hash)
-        {
-            HttpResponseMessage reply = await Base.Post(client, "/query/getPieceStates/" + hash);
+		public async Task<List<PieceStates>> GetTorrentPiecesStates(string hash)
+		{
+			HttpResponseMessage reply = await Post(client, "/query/getPieceStates/" + hash);
 
-            if (reply == null)
-                return null;
+			var result = await reply.Content.ReadAsStringAsync();
 
-            var result = await reply.Content.ReadAsStringAsync();
+			if (reply == null)
+				return null;
 
-            string[] array = result.Split(',');
+			var array = JsonConvert.DeserializeObject<PieceStates[]>(await reply.Content.ReadAsStringAsync());
+			return new List<PieceStates>(array);
+		}
 
-            var piecesStates = new PieceStates[array.Length];
-
-            int i = 0;
-
-            foreach (var item in array)
-            {
-                if (item.Contains(']'))
-                {
-                    piecesStates[i] = (PieceStates)item[0];
-                    i++;
-                }
-            }
-
-            return piecesStates;
-        }*/
-
-        public async Task<TransferInfo> GetTransferInfo()
+		public async Task<TransferInfo> GetTransferInfo()
         {
             HttpResponseMessage reply = await Post(client, "/query/transferInfo");
 
@@ -209,14 +200,14 @@ namespace qBittorrentSharp
             return JsonConvert.DeserializeObject<TransferInfo>(await reply.Content.ReadAsStringAsync());
         }
 
-        public async Task<Preferences> GetPreferences()
+        public async Task<PreferencesJSON> GetPreferences()
         {
             HttpResponseMessage reply = await Post(client, "/query/preferences");
 
             if (reply == null)
                 return null;
 
-            return JsonConvert.DeserializeObject<Preferences>(await reply.Content.ReadAsStringAsync());
+            return JsonConvert.DeserializeObject<PreferencesJSON>(await reply.Content.ReadAsStringAsync());
         }
 
         public async Task<PartialData> GetPartialData(int rid = 0)
@@ -244,9 +235,405 @@ namespace qBittorrentSharp
             return JsonConvert.DeserializeObject<List<Log>>(await reply.Content.ReadAsStringAsync());
         }
 
-        public async Task PauseAll()
+        public async Task DownloadFromUrl(List<Uri> urls, string savePath = null, string cookie = null, string category = null,
+                                            bool? skipChecking = null, bool? paused = null, bool? rootFolder = null,
+											string rename = null, int? upLimit = null, int? dlLimit = null,
+											string squentialDownload = null, bool? firstLastPiecePrio = null)
+        {
+			var form = new MultipartFormDataContent();
+
+			/*string urlString = "";
+			foreach (Uri rls in urls)
+				urlString += rls.ToString() + "\n";
+			urlString = urlString.Remove(urlString.Length - 1);*/
+			form.Add(new StringContent(ListToString(urls, '\n')), "urls");
+
+			if (savePath != null)
+				form.Add(new StringContent(savePath), "savepath");
+
+			if (cookie != null)
+				form.Add(new StringContent(cookie), "cookie");
+
+			if (category != null)
+				form.Add(new StringContent(category), "category");
+
+			if (skipChecking != null)
+				form.Add(new StringContent(skipChecking.ToString().ToLower()), "skip_checking");
+
+			if (paused != null)
+				form.Add(new StringContent(paused.ToString().ToLower()), "paused");
+
+			if (rootFolder != null)
+				form.Add(new StringContent(rootFolder.ToString().ToLower()), "root_folder");
+
+			if (rename != null)
+				form.Add(new StringContent(rename), "rename");
+
+			if (upLimit != null)
+				form.Add(new StringContent(upLimit.ToString()), "upLimit");
+
+			if (dlLimit != null)
+				form.Add(new StringContent(dlLimit.ToString()), "dlLimit");
+
+			if (squentialDownload != null)
+				form.Add(new StringContent(squentialDownload), "squentialDownload");
+
+			if (firstLastPiecePrio != null)
+				form.Add(new StringContent(firstLastPiecePrio.ToString().ToLower()), "firstLastPiecePrio");
+
+			await Post(client, "/command/download", form);
+        }
+
+		public async Task DownloadFromDisk(List<string> filePaths, string savePath = null, string cookie = null, string category = null,
+											bool? skipChecking = null, bool? paused = null, bool? rootFolder = null,
+											string rename = null, int? upLimit = null, int? dlLimit = null,
+											string squentialDownload = null, bool? firstLastPiecePrio = null)
+		{
+			var form = new MultipartFormDataContent();
+
+			foreach (string filePath in filePaths)
+			{
+				string filename = Path.GetFileName(filePath);
+				var content = File.ReadAllBytes(filePath);
+				form.Add(new ByteArrayContent(content), "torrents", filename);
+				int i = 0;
+			}
+
+			if (savePath != null)
+				form.Add(new StringContent(savePath), "savepath");
+
+			if (cookie != null)
+				form.Add(new StringContent(cookie), "cookie");
+
+			if (category != null)
+				form.Add(new StringContent(category), "category");
+
+			if (skipChecking != null)
+				form.Add(new StringContent(skipChecking.ToString().ToLower()), "skip_checking");
+
+			if (paused != null)
+				form.Add(new StringContent(paused.ToString().ToLower()), "paused");
+
+			if (rootFolder != null)
+				form.Add(new StringContent(rootFolder.ToString().ToLower()), "root_folder");
+
+			if (rename != null)
+				form.Add(new StringContent(rename), "rename");
+
+			if (upLimit != null)
+				form.Add(new StringContent(upLimit.ToString()), "upLimit");
+
+			if (dlLimit != null)
+				form.Add(new StringContent(dlLimit.ToString()), "dlLimit");
+
+			if (squentialDownload != null)
+				form.Add(new StringContent(squentialDownload), "squentialDownload");
+
+			if (firstLastPiecePrio != null)
+				form.Add(new StringContent(firstLastPiecePrio.ToString().ToLower()), "firstLastPiecePrio");
+
+			await Post(client, "/command/upload", form);
+		}
+
+		public async Task AddTrackers(string hash, List<Uri> trackers)
+		{
+			/*string trackersString = "";
+			foreach (Uri tracker in trackers)
+				trackersString += tracker.ToString() + "\n";
+			trackersString = trackersString.Remove(trackersString.Length - 1);*/
+
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hash", hash),
+				new KeyValuePair<string, string>("urls", ListToString(trackers, '\n'))
+			};
+
+			await Post(client, "/command/addTrackers", new FormUrlEncodedContent(content));
+		}
+
+		public async Task PauseTorrent(string hash)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hash", hash)
+			};
+
+			await Post(client, "/command/pause", new FormUrlEncodedContent(content));
+		}
+
+		public async Task PauseAll()
         {
             await Post(client, "/command/pauseAll");
         }
-    }
+
+		public async Task ResumeTorrent(string hash)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hash", hash)
+			};
+
+			await Post(client, "/command/resume", new FormUrlEncodedContent(content));
+		}
+
+		public async Task ResumeAll()
+		{
+			await Post(client, "/command/resumeAll");
+		}
+
+		public async Task DeleteTorrents(List<string> hashes, bool deleteData = false)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
+			};
+
+			if (deleteData)
+				await Post(client, "/command/deletePerm", new FormUrlEncodedContent(content));
+
+			else
+				await Post(client, "/command/delete", new FormUrlEncodedContent(content));
+		}
+
+		public async Task RecheckTorrent(string hash)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hash", hash)
+			};
+
+			await Post(client, "/command/recheck", new FormUrlEncodedContent(content));
+		}
+
+		// Torrent Queing needs to be enabled
+		public async Task IncreaseTorrentPriority(List<string> hashes)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
+			};
+
+			await Post(client, "/command/increasePrio", new FormUrlEncodedContent(content));
+		}
+
+		// Torrent Queing needs to be enabled
+		public async Task DecreaseTorrentPriority(List<string> hashes)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
+			};
+
+			await Post(client, "/command/decreasePrio", new FormUrlEncodedContent(content));
+		}
+
+		// Torrent Queing needs to be enabled
+		public async Task MaxTorrentPriority(List<string> hashes)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
+			};
+
+			await Post(client, "/command/topPrio", new FormUrlEncodedContent(content));
+		}
+
+		// Torrent Queing needs to be enabled
+		public async Task MinTorrentPriority(List<string> hashes)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
+			};
+
+			await Post(client, "/command/bottomPrio", new FormUrlEncodedContent(content));
+		}
+
+		public async Task SetFilePriority(string hash, int fileId, Priority priority)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hash", hash),
+				new KeyValuePair<string, string>("id", fileId.ToString()),
+				new KeyValuePair<string, string>("priority", ((int)priority).ToString())
+			};
+
+			await Post(client, "/command/setFilePrio", new FormUrlEncodedContent(content));
+		}
+
+		public async Task<int> GetGlobalDownloadLimit()
+		{
+			HttpResponseMessage reply = await Post(client, "/command/getGlobalDlLimit");
+
+			return Int32.Parse(await reply.Content.ReadAsStringAsync());
+		}
+
+		public async Task SetGlobalDownloadLimit(int limit)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("limit", limit.ToString())
+			};
+
+			await Post(client, "/command/setGlobalDlLimit", new FormUrlEncodedContent(content));
+		}
+
+		public async Task<int> GetGlobalUploadLimit()
+		{
+			HttpResponseMessage reply = await Post(client, "/command/getGlobalUpLimit");
+
+			return Int32.Parse(await reply.Content.ReadAsStringAsync());
+		}
+
+		public async Task SetGlobalUploadLimit(int limit)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("limit", limit.ToString())
+			};
+
+			await Post(client, "/command/setGlobalUpLimit", new FormUrlEncodedContent(content));
+		}
+
+		public async Task<List<KeyValuePair<string, int>>> GetTorrentDownloadLimit(List<string> hashes)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
+			};
+
+			var reply = await Post(client, "/command/getTorrentsDlLimit", new FormUrlEncodedContent(content));
+			var objectList = JsonConvert.DeserializeObject<object>(await reply.Content.ReadAsStringAsync());
+
+			var torrentDlLimits = new List<KeyValuePair<string, int>>();
+			var properties = (objectList as ICollection).GetEnumerator();
+			while (properties.MoveNext())
+			{
+				JProperty property = (JProperty)properties.Current;
+				torrentDlLimits.Add(new KeyValuePair<string, int>(property.Name, (int)property.Value));
+			}
+
+			return torrentDlLimits;
+		}
+
+		public async Task SetTorrentDownloadLimit(List<string> hashes, int limit)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
+				new KeyValuePair<string, string>("limit", limit.ToString())
+			};
+
+			await Post(client, "/command/setTorrentsDlLimit", new FormUrlEncodedContent(content));
+		}
+
+		public async Task<List<KeyValuePair<string, int>>> GetTorrentUploadLimit(List<string> hashes)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
+			};
+
+			var reply = await Post(client, "/command/getTorrentsUpLimit", new FormUrlEncodedContent(content));
+			var objectList = JsonConvert.DeserializeObject<object>(await reply.Content.ReadAsStringAsync());
+
+			var torrentUpLimits = new List<KeyValuePair<string, int>>();
+			var properties = (objectList as ICollection).GetEnumerator();
+			while (properties.MoveNext())
+			{
+				JProperty property = (JProperty)properties.Current;
+				torrentUpLimits.Add(new KeyValuePair<string, int>(property.Name, (int)property.Value));
+			}
+
+			return torrentUpLimits;
+		}
+
+		public async Task SetTorrentUploadLimit(List<string> hashes, int limit)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
+				new KeyValuePair<string, string>("limit", limit.ToString())
+			};
+
+			await Post(client, "/command/setTorrentsUpLimit", new FormUrlEncodedContent(content));
+		}
+
+		public async Task SetTorrentsLocation(List<string> hashes, string location)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
+				new KeyValuePair<string, string>("location", location)
+			};
+
+			await Post(client, "/command/setLocation", new FormUrlEncodedContent(content));
+		}
+
+		public async Task SetTorrentName(string hash, string name)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hash", hash),
+				new KeyValuePair<string, string>("name", name)
+			};
+
+			await Post(client, "/command/rename", new FormUrlEncodedContent(content));
+		}
+
+		public async Task SetTorrentCategory(List<string> hashes, string categoryName)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
+				new KeyValuePair<string, string>("category", categoryName)
+			};
+
+			await Post(client, "/command/setCategory", new FormUrlEncodedContent(content));
+		}
+
+		public async Task AddNewCategory(string categoryName)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("category", categoryName)
+			};
+
+			await Post(client, "/command/setCategory", new FormUrlEncodedContent(content));
+		}
+
+		public async Task RemoveCategories(List<string> categoryNames)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("categories", ListToString(categoryNames, '\n')),
+			};
+
+			await Post(client, "/command/removeCategories", new FormUrlEncodedContent(content));
+		}
+
+		public async Task SetAutoTorrentMgmt(List<string> hashes, bool autoTorrentMgmt)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
+				new KeyValuePair<string, string>("enable", autoTorrentMgmt.ToString().ToLower())
+			};
+
+			await Post(client, "/command/setAutoTMM", new FormUrlEncodedContent(content));
+		}
+
+		// When setting preferences scan_dirs must always be accompanied with download_in_scan_dirs
+		public async Task SetPreferences(Preferences preferences)
+		{
+			var converted = JsonConvert.SerializeObject(preferences);
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("json", JsonConvert.SerializeObject(preferences))
+			};
+
+			int i = 0;
+			await Post(client, "/command/setPreferences", new FormUrlEncodedContent(content));
+		}
+	}
 }
