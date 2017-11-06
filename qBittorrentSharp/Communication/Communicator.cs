@@ -207,7 +207,7 @@ namespace qBittorrentSharp
             if (reply == null)
                 return null;
 
-            return JsonConvert.DeserializeObject<PreferencesJSON>(await reply.Content.ReadAsStringAsync());
+			return JsonConvert.DeserializeObject<PreferencesJSON>(await reply.Content.ReadAsStringAsync());
         }
 
         public async Task<PartialData> GetPartialData(int rid = 0)
@@ -241,11 +241,6 @@ namespace qBittorrentSharp
 											string squentialDownload = null, bool? firstLastPiecePrio = null)
         {
 			var form = new MultipartFormDataContent();
-
-			/*string urlString = "";
-			foreach (Uri rls in urls)
-				urlString += rls.ToString() + "\n";
-			urlString = urlString.Remove(urlString.Length - 1);*/
 			form.Add(new StringContent(ListToString(urls, '\n')), "urls");
 
 			if (savePath != null)
@@ -623,17 +618,77 @@ namespace qBittorrentSharp
 			await Post(client, "/command/setAutoTMM", new FormUrlEncodedContent(content));
 		}
 
-		// When setting preferences scan_dirs must always be accompanied with download_in_scan_dirs
-		public async Task SetPreferences(Preferences preferences)
+		public async Task SetPreferences(PreferencesJSON preferences)
 		{
-			var converted = JsonConvert.SerializeObject(preferences);
+			var jsonObject = JsonConvert.SerializeObject(preferences,
+														Formatting.None,
+														new JsonSerializerSettings
+														{
+															NullValueHandling = NullValueHandling.Ignore
+														});
 			var content = new[]
 			{
-				new KeyValuePair<string, string>("json", JsonConvert.SerializeObject(preferences))
+				new KeyValuePair<string, string>("json", jsonObject)
 			};
 
-			int i = 0;
 			await Post(client, "/command/setPreferences", new FormUrlEncodedContent(content));
+		}
+
+		public async Task<bool> IsAltSpeedLimitsEnabled()
+		{
+			HttpResponseMessage reply = await Post(client, "/command/alternativeSpeedLimitsEnabled");
+
+			if (Int32.Parse(await reply.Content.ReadAsStringAsync()) == 1)
+				return true;
+
+			return false;
+		}
+
+		public async Task ToggleAltSpeedLimits()
+		{
+			await Post(client, "/command/toggleAlternativeSpeedLimits");
+		}
+
+		public async Task ToggleSequentialDownload(List<string> hashes)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
+			};
+
+			await Post(client, "/command/toggleSequentialDownload", new FormUrlEncodedContent(content));
+		}
+
+		public async Task ToggleFirstLastPiecePrio(List<string> hashes)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
+			};
+
+			await Post(client, "/command/toggleFirstLastPiecePrio", new FormUrlEncodedContent(content));
+		}
+
+		public async Task SetForceStart(List<string> hashes, bool activate)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
+				new KeyValuePair<string, string>("value", activate.ToString().ToLower())
+			};
+
+			await Post(client, "/command/setForceStart", new FormUrlEncodedContent(content));
+		}
+
+		public async Task SetSuperSeeding(List<string> hashes, bool activate)
+		{
+			var content = new[]
+			{
+				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
+				new KeyValuePair<string, string>("value", activate.ToString().ToLower())
+			};
+
+			await Post(client, "/command/setSuperSeeding", new FormUrlEncodedContent(content));
 		}
 	}
 }
