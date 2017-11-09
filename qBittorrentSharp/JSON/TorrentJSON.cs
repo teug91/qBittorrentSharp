@@ -1,111 +1,44 @@
 ﻿using Newtonsoft.Json;
 using qBittorrentSharp.Enums;
-using System;
 
 namespace qBittorrentSharp.JSON
 {
-    public class TorrentJSON
-    {
-        [JsonProperty("added_on")]
-        public int Added_on { get; set; }
-
-        [JsonProperty("amount_left")]
-        public long Amount_left { get; set; }
-
-        [JsonProperty("category")]
-        public string Category { get; set; }
-
-        [JsonProperty("completed")]
-        public int Completed { get; set; }
-
-        [JsonProperty("completion_on")]
-        public int Completion_on { get; set; }
-
-        [JsonProperty("dl_limit")]
-        public int Dl_limit { get; set; }
-
-        [JsonProperty("dlspeed")]
-        public int Dlspeed { get; set; }
-
-        [JsonProperty("downloaded")]
-        public long Downloaded { get; set; }
-
-        [JsonProperty("downloaded_session")]
-        public long Downloaded_session { get; set; }
-
-        [JsonProperty("eta")]
-        public int Eta { get; set; }
-
-        [JsonProperty("f_l_piece_prio")]
-        public bool F_l_piece_prio { get; set; }
-
-        [JsonProperty("Force_start")]
-        public bool Force_start { get; set; }
-
-        [JsonProperty("last_activity")]
-        public int Last_activity { get; set; }
-
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
-        [JsonProperty("num_complete")]
-        public int Num_complete { get; set; }
-
-        [JsonProperty("num_incomplete")]
-        public int Num_incomplete { get; set; }
-
-        [JsonProperty("num_leechs")]
-        public int Num_leechs { get; set; }
-
-        [JsonProperty("num_seeds")]
-        public int Num_seeds { get; set; }
-
-        [JsonProperty("priority")]
-        public int Priority { get; set; }
-
-        [JsonProperty("progress")]
-        public float Progress { get; set; }
-
-        [JsonProperty("ratio")]
-        public float Ratio { get; set; }
-
-        [JsonProperty("ratio_limit")]
-        public float Ratio_limit { get; set; }
-
-        [JsonProperty("Save_path")]
-        public string Save_path { get; set; }
-
-        [JsonProperty("seen_complete")]
-        public int Seen_complete { get; set; }
-
-        [JsonProperty("seq_dl")]
-        public bool Seq_dl { get; set; }
-
-        [JsonProperty("size")]
-        public long Size { get; set; }
-
-        [JsonProperty("state")]
-        public States State { get; set; }
-
-        [JsonProperty("super_seeding")]
-        public bool Super_seeding { get; set; }
-
-        [JsonProperty("total_size")]
-        public long Total_size { get; set; }
-
-        [JsonProperty("tracker")]
-        public Uri Tracker { get; set; }
-
-        [JsonProperty("up_limit")]
-        public int Up_limit { get; set; }
-
-        [JsonProperty("uploaded")]
-        public long Uploaded { get; set; }
-
-        [JsonProperty("uploaded_session")]
-        public long Uploaded_session { get; set; }
-
-        [JsonProperty("upspeed")]
-        public int Upspeed { get; set; }
-    }
+	internal class TorrentJSON
+	{
+		internal int added_on { get; set; }
+		internal long amount_left { get; set; }
+		internal string category { get; set; }
+		internal long completed { get; set; }
+		internal long completion_on { get; set; }
+		internal long dl_limit { get; set; }
+		internal long dlspeed { get; set; }
+		internal long downloaded { get; set; }
+		internal long downloaded_session { get; set; }
+		internal long eta { get; set; }
+		internal bool f_l_piece_prio { get; set; }
+		internal bool force_start { get; set; }
+		internal string hash { get; set; }
+		internal int last_activity { get; set; }
+		internal string name { get; set; }
+		internal int num_complete { get; set; }
+		internal int num_incomplete { get; set; }
+		internal int num_leechs { get; set; }
+		internal int num_seeds { get; set; }
+		internal int priority { get; set; }
+		internal float progress { get; set; }
+		internal float ratio { get; set; }
+		internal float ratio_limit { get; set; }
+		internal string save_path { get; set; }
+		internal long seen_complete { get; set; }
+		internal bool seq_dl { get; set; }
+		internal long size { get; set; }
+		internal string state { get; set; }
+		internal bool super_seeding { get; set; }
+		internal long total_size { get; set; }
+		internal string tracker { get; set; }
+		internal long up_limit { get; set; }
+		internal long uploaded { get; set; }
+		internal long uploaded_session { get; set; }
+		internal long upspeed { get; set; }
+	}
 }

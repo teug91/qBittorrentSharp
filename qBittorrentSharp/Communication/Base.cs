@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace qBittorrentSharp
 {
-    public partial class Communicator
+    public partial class API
     {
         private static async Task<HttpResponseMessage> Get(HttpClient client, string requestUri)
         {

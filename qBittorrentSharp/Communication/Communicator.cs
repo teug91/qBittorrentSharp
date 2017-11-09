@@ -12,14 +12,15 @@ using System.Diagnostics;
 using System.IO;
 using qBittorrentSharp.Enums;
 using Newtonsoft.Json.Linq;
+using qBittorrentSharp.Data;
 
 namespace qBittorrentSharp
 {
-    public partial class Communicator
+    public partial class API
     {
         private HttpClient client;
 
-        public Communicator(string baseAddress, int timeout = 100)
+        public API(string baseAddress, int timeout = 100)
         {
             client = new HttpClient();
 
@@ -85,7 +86,7 @@ namespace qBittorrentSharp
             await Post(client, "/command/shutdown");
         }
 
-        public async Task<List<TorrentInfo>> GetTorrents(string filter = null,
+        public async Task<List<Torrent>> GetTorrents(string filter = null,
                                                             string category = null,
                                                             string sort = null,
                                                             bool reverse = false,
@@ -126,7 +127,13 @@ namespace qBittorrentSharp
             if (reply == null)
                 return null;
 
-            return JsonConvert.DeserializeObject<List<TorrentInfo>>(await reply.Content.ReadAsStringAsync());
+			var torrentsJSON = JsonConvert.DeserializeObject<List<TorrentJSON>>(await reply.Content.ReadAsStringAsync());
+			var torrents = new List<Torrent>();
+
+			foreach (TorrentJSON t in torrentsJSON)
+				torrents.Add(new Torrent(t));
+
+			return torrents;
         }
 
         public async Task<TorrentProperties> GetTorrentProperties(string hash)
@@ -232,7 +239,13 @@ namespace qBittorrentSharp
             if (reply == null)
                 return null;
 
-            return JsonConvert.DeserializeObject<List<Log>>(await reply.Content.ReadAsStringAsync());
+			var logJSONs = JsonConvert.DeserializeObject<List<LogJSON>>(await reply.Content.ReadAsStringAsync());
+			var logs = new List<Log>();
+
+			foreach (var e in logJSONs)
+				logs.Add(new Log(e));
+
+			return logs;
         }
 
         public async Task DownloadFromUrl(List<Uri> urls, string savePath = null, string cookie = null, string category = null,

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace qBittorrentSharp.Enums
 {
-    public enum States
+    public enum TorrentState
     {
         error,
         pausedUP,
