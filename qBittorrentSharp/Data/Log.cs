@@ -11,6 +11,8 @@ namespace qBittorrentSharp.Data
         public DateTime Timestamp { get; set; }
         public LogType Type { get; set; }
 
+		public Log() { }
+
 		internal Log(LogJSON l)
 		{
 			Id = l.id;

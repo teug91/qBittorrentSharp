@@ -3,7 +3,7 @@ using qBittorrentSharp.Enums;
 
 namespace qBittorrentSharp.JSON
 {
-    public class LogJSON
+    internal class LogJSON
     {
         public int id { get; set; }
         public string message { get; set; }

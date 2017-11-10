@@ -124,8 +124,12 @@ namespace qBittorrentSharp
             else
                 reply = await Post(client, "/query/torrents");
 
-            if (reply == null)
-                return null;
+			if (reply == null)
+				return null;
+
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
+				return null;
 
 			var torrentsJSON = JsonConvert.DeserializeObject<List<TorrentJSON>>(await reply.Content.ReadAsStringAsync());
 			var torrents = new List<Torrent>();
@@ -140,30 +144,49 @@ namespace qBittorrentSharp
         {
             HttpResponseMessage reply = await Post(client, "/query/propertiesGeneral/" + hash);
 
-            if (reply == null)
-                return null;
+			if (reply == null)
+				return null;
 
-            return JsonConvert.DeserializeObject<TorrentProperties>(await reply.Content.ReadAsStringAsync());
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
+				return null;
+
+			return new TorrentProperties(JsonConvert.DeserializeObject<TorrentPropertiesJSON>(await reply.Content.ReadAsStringAsync()));
         }
 
-        public async Task<List<TorrentTracker>> GetTorrentTrackers(string hash)
+        public async Task<List<Tracker>> GetTorrentTrackers(string hash)
         {
             HttpResponseMessage reply = await Post(client, "/query/propertiesTrackers/" + hash);
 
-            if (reply == null)
-                return null;
+			if (reply == null)
+				return null;
 
-            return JsonConvert.DeserializeObject<List<TorrentTracker>>(await reply.Content.ReadAsStringAsync());
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
+				return null;
+
+			var js = JsonConvert.DeserializeObject<List<TrackerJSON>>(await reply.Content.ReadAsStringAsync());
+			var trackers = new List<Tracker>();
+			foreach (var e in js)
+			{
+				trackers.Add(new Tracker(e));
+			}
+
+			return trackers;
         }
 
         public async Task<List<Uri>> GetTorrentWebSeeds(string hash)
         {
             HttpResponseMessage reply = await Post(client, "/query/propertiesWebSeeds/" + hash);
 
-            if (reply == null)
-                return null;
+			if (reply == null)
+				return null;
 
-            var torrentWebSeeds =  JsonConvert.DeserializeObject<List<TorrentWebSeed>>(await reply.Content.ReadAsStringAsync());
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
+				return null;
+
+			var torrentWebSeeds =  JsonConvert.DeserializeObject<List<TorrentWebSeed>>(await reply.Content.ReadAsStringAsync());
             var urls = new List<Uri>();
             foreach (TorrentWebSeed torrentWebSeed in torrentWebSeeds)
                 urls.Add(torrentWebSeed.Url);
@@ -175,12 +198,14 @@ namespace qBittorrentSharp
         {
             HttpResponseMessage reply = await Post(client, "/query/propertiesFiles/" + hash);
 
-            var result = await reply.Content.ReadAsStringAsync();
+			if (reply == null)
+				return null;
 
-            if (reply == null)
-                return null;
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
+				return null;
 
-            var array = JsonConvert.DeserializeObject<TorrentContents[]>(await reply.Content.ReadAsStringAsync());
+			var array = JsonConvert.DeserializeObject<TorrentContents[]>(await reply.Content.ReadAsStringAsync());
 			return new List<TorrentContents>(array);
         }
 
@@ -188,31 +213,56 @@ namespace qBittorrentSharp
 		{
 			HttpResponseMessage reply = await Post(client, "/query/getPieceStates/" + hash);
 
-			var result = await reply.Content.ReadAsStringAsync();
-
 			if (reply == null)
+				return null;
+
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
 				return null;
 
 			var array = JsonConvert.DeserializeObject<PieceStates[]>(await reply.Content.ReadAsStringAsync());
 			return new List<PieceStates>(array);
 		}
 
+		public async Task<List<string>> GetTorrentPiecesHashes(string hash)
+		{
+			HttpResponseMessage reply = await Post(client, "/query/getPieceHashes/" + hash);
+			if (reply == null)
+				return null;
+
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
+				return null;
+
+			var array = JsonConvert.DeserializeObject<string[]>(await reply.Content.ReadAsStringAsync());
+
+			return new List<string>(array);
+		}
+
 		public async Task<TransferInfo> GetTransferInfo()
         {
             HttpResponseMessage reply = await Post(client, "/query/transferInfo");
 
-            if (reply == null)
-                return null;
+			if (reply == null)
+				return null;
 
-            return JsonConvert.DeserializeObject<TransferInfo>(await reply.Content.ReadAsStringAsync());
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
+				return null;
+
+			return JsonConvert.DeserializeObject<TransferInfo>(await reply.Content.ReadAsStringAsync());
         }
 
         public async Task<PreferencesJSON> GetPreferences()
         {
             HttpResponseMessage reply = await Post(client, "/query/preferences");
 
-            if (reply == null)
-                return null;
+			if (reply == null)
+				return null;
+
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
+				return null;
 
 			return JsonConvert.DeserializeObject<PreferencesJSON>(await reply.Content.ReadAsStringAsync());
         }
@@ -221,12 +271,14 @@ namespace qBittorrentSharp
         {
             HttpResponseMessage reply = await Post(client, "/sync/maindata?rid=" + rid);
 
-            if (reply == null)
-                return null;
+			if (reply == null)
+				return null;
 
-            //API.ToTorrent(JsonConvert.DeserializeObject<PartialData>(await reply.Content.ReadAsStringAsync()));
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
+				return null;
 
-            return JsonConvert.DeserializeObject<PartialData>(await reply.Content.ReadAsStringAsync());
+			return new PartialData(JsonConvert.DeserializeObject<PartialDataJSON>(await reply.Content.ReadAsStringAsync()));
         }
 
         public async Task<List<Log>> GetLog(bool normal = true, bool info = true, bool warning = true,
@@ -236,8 +288,12 @@ namespace qBittorrentSharp
                                                     + "&info=" + info.ToString() + "&warning=" + warning.ToString()
                                                     + "&critical=" + critical.ToString() + "&last_known_id=" + last_known_id);
 
-            if (reply == null)
-                return null;
+			if (reply == null)
+				return null;
+
+			var result = await reply.Content.ReadAsStringAsync();
+			if (result == "")
+				return null;
 
 			var logJSONs = JsonConvert.DeserializeObject<List<LogJSON>>(await reply.Content.ReadAsStringAsync());
 			var logs = new List<Log>();
