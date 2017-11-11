@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 
 namespace qBittorrentSharp.JSON
 {
-    public class TrackerJSON
+    internal class TrackerJSON
     {
         public Uri Url { get; set; }
         public string Status { get; set; }

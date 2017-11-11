@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using qBittorrentSharp.Enums;
-
-namespace qBittorrentSharp.JSON
+﻿namespace qBittorrentSharp.JSON
 {
     internal class TransferInfoJSON
     {

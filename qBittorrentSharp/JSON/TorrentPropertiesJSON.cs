@@ -1,8 +1,6 @@
-﻿using Newtonsoft.Json;
-
-namespace qBittorrentSharp.JSON
+﻿namespace qBittorrentSharp.JSON
 {
-    public class TorrentPropertiesJSON
+    internal class TorrentPropertiesJSON
     {
         public string Save_Path { get; set; }
         public int Creation_Date { get; set; }

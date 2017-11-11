@@ -2,8 +2,8 @@
 {
     public enum ConnectionStatus
     {
-        connected,
-        firewalled,
-        disconnected
+        Connected,
+        Firewalled,
+        Disconnected
     };
 }

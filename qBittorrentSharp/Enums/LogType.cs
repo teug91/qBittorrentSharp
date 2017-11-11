@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace qBittorrentSharp.Enums
+﻿namespace qBittorrentSharp.Enums
 {
     public enum LogType
     {

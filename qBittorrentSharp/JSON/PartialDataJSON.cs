@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using qBittorrentSharp.Enums;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace qBittorrentSharp.JSON
 {

@@ -253,7 +253,7 @@ namespace qBittorrentSharp
 			return JsonConvert.DeserializeObject<TransferInfo>(await reply.Content.ReadAsStringAsync());
         }
 
-        public async Task<PreferencesJSON> GetPreferences()
+        public async Task<Preferences> GetPreferences()
         {
             HttpResponseMessage reply = await Post(client, "/query/preferences");
 
@@ -264,7 +264,7 @@ namespace qBittorrentSharp
 			if (result == "")
 				return null;
 
-			return JsonConvert.DeserializeObject<PreferencesJSON>(await reply.Content.ReadAsStringAsync());
+			return new Preferences(JsonConvert.DeserializeObject<PreferencesJSON>(await reply.Content.ReadAsStringAsync()));
         }
 
         public async Task<PartialData> GetPartialData(int rid = 0)
@@ -687,9 +687,9 @@ namespace qBittorrentSharp
 			await Post(client, "/command/setAutoTMM", new FormUrlEncodedContent(content));
 		}
 
-		public async Task SetPreferences(PreferencesJSON preferences)
+		public async Task SetPreferences(Preferences preferences)
 		{
-			var jsonObject = JsonConvert.SerializeObject(preferences,
+			var jsonObject = JsonConvert.SerializeObject(new PreferencesJSON(preferences),
 														Formatting.None,
 														new JsonSerializerSettings
 														{

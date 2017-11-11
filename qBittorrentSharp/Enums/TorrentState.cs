@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace qBittorrentSharp.Enums
+﻿namespace qBittorrentSharp.Enums
 {
     public enum TorrentState
     {
-        error,
-        pausedUP,
-        pausedDL,
-        queuedUP,
-        queuedDL,
-        uploading,
-        stalledUP,
-        checkingUP,
-        checkingDL,
-        downloading,
-        stalledDL,
-        metaDL
+        Error,
+        PausedUP,
+        PausedDL,
+        QueuedUP,
+        QueuedDL,
+        Uploading,
+        StalledUP,
+        CheckingUP,
+        CheckingDL,
+        Downloading,
+        StalledDL,
+        MetaDL
     };
 }
