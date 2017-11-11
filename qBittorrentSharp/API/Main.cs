@@ -360,7 +360,6 @@ namespace qBittorrentSharp
 				string filename = Path.GetFileName(filePath);
 				var content = File.ReadAllBytes(filePath);
 				form.Add(new ByteArrayContent(content), "torrents", filename);
-				int i = 0;
 			}
 
 			if (savePath != null)
