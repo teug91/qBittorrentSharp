@@ -2,7 +2,7 @@
 
 namespace qBittorrentSharp.JSON
 {
-    public class TorrentWebSeed
+    internal class TorrentWebSeedJSON
     {
         public Uri Url { get; set; }
     }

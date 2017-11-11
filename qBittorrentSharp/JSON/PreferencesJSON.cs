@@ -49,7 +49,7 @@ namespace qBittorrentSharp.JSON
 		public int? max_active_uploads { get; set; }
 		public int? max_connec { get; set; }
 		public int? max_connec_per_torrent { get; set; }
-		public int? max_ratio { get; set; }
+		public float? max_ratio { get; set; }
 		public int? max_ratio_act { get; set; }
 		public bool? max_ratio_enabled { get; set; }
 		public int? max_uploads { get; set; }

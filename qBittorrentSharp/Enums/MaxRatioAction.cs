@@ -1,6 +1,6 @@
 ﻿namespace qBittorrentSharp.Enums
 {
-    public enum MaxRatioAct
+    public enum MaxRatioAction
     {
         PauseTorrent = 0,
         RemoveTorrent = 1

@@ -186,9 +186,9 @@ namespace qBittorrentSharp
 			if (result == "")
 				return null;
 
-			var torrentWebSeeds =  JsonConvert.DeserializeObject<List<TorrentWebSeed>>(await reply.Content.ReadAsStringAsync());
+			var torrentWebSeeds =  JsonConvert.DeserializeObject<List<TorrentWebSeedJSON>>(await reply.Content.ReadAsStringAsync());
             var urls = new List<Uri>();
-            foreach (TorrentWebSeed torrentWebSeed in torrentWebSeeds)
+            foreach (TorrentWebSeedJSON torrentWebSeed in torrentWebSeeds)
                 urls.Add(torrentWebSeed.Url);
 
             return urls;
