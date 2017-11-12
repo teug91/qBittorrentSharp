@@ -12,6 +12,6 @@
         public string connection_status { get; set; }
         public bool queueing { get; set; }
         public bool use_alt_speed_limits { get; set; }
-        public int refresh_interval { get; set; }
+        public long refresh_interval { get; set; }
     }
 }

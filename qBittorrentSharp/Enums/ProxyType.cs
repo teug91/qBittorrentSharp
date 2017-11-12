@@ -1,12 +1,33 @@
 ﻿namespace qBittorrentSharp.Enums
 {
+	/// <summary>
+	/// Proxy type.
+	/// </summary>
     public enum ProxyType
     {
-        ProxyIsDisabled = -1,
-        HttpProxyWithoutAuthentication = 1,
-        Socks5ProxyWithoutAuthentication = 2,
-        HttpProxyWithAuthentication = 3,
-        Socks5ProxyWithAuthentication = 4,
-        Socks4ProxyWithoutAuthentication = 5
+		/// <summary>
+		/// Proxy is disabled.
+		/// </summary>
+		ProxyIsDisabled = -1,
+		/// <summary>
+		/// HTTP proxy without authentication.
+		/// </summary>
+		HttpProxyWithoutAuthentication = 1,
+		/// <summary>
+		/// SOCKS5 proxy without authentication
+		/// </summary>
+		Socks5ProxyWithoutAuthentication = 2,
+		/// <summary>
+		/// HTTP proxy with authentication
+		/// </summary>
+		HttpProxyWithAuthentication = 3,
+		/// <summary>
+		/// SOCKS5 proxy with authentication
+		/// </summary>
+		Socks5ProxyWithAuthentication = 4,
+		/// <summary>
+		/// SOCKS4 proxy without authentication
+		/// </summary>
+		Socks4ProxyWithoutAuthentication = 5
     };
 }

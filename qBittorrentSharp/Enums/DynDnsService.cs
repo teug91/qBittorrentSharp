@@ -1,8 +1,17 @@
 ﻿namespace qBittorrentSharp.Enums
 {
+	/// <summary>
+	/// DynDNS service.
+	/// </summary>
     public enum DynDnsService
     {
-        UseDyDns = 0,
+		/// <summary>
+		/// Use DyDNS.
+		/// </summary>
+		UseDyDns = 0,
+		/// <summary>
+		/// Use NOIP.
+		/// </summary>
         UseNoIp = 1
     };
 }

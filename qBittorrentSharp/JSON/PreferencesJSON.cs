@@ -16,6 +16,8 @@ namespace qBittorrentSharp.JSON
 		public string autorun_program { get; set; }
 		public bool? bypass_local_auth { get; set; }
 		public bool? dht { get; set; }
+		public bool? dhtSameAsBT { get; set; }
+		public bool? dht_port { get; set; }
 		public long? dl_limit { get; set; }
 		public bool? dont_count_slow_torrents { get; set; }
 		public string[] download_in_scan_dirs { get; set; }
@@ -105,7 +107,9 @@ namespace qBittorrentSharp.JSON
 			autorun_enabled = p.Autorun_Enabled;
 			autorun_program = p.Autorun_Program;
 			bypass_local_auth = p.Bypass_Local_Auth;
-			dht = dht;
+			dht = p.Dht;
+			dhtSameAsBT = p.DhtSameAsBT;
+			dht_port = p.Dht_Port;
 			dl_limit = p.Dl_Limit;
 			dont_count_slow_torrents = p.Dont_Count_Slow_Torrents;
 			dyndns_domain = p.Dyndns_Domain;
@@ -118,7 +122,7 @@ namespace qBittorrentSharp.JSON
 			if (p.Encryption != null)
 				encryption = (int)p.Encryption;
 			export_dir = p.Export_Dir;
-			export_dir_fin = p.Export_Dir_Fin;
+			export_dir_fin = p.Export_Dir_Finished;
 			force_proxy = p.Force_Proxy;
 			incomplete_files_ext = p.Incomplete_Files_Ext;
 			ip_filter_enabled = p.Ip_Filter_Enabled;

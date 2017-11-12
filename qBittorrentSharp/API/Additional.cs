@@ -30,7 +30,5 @@ namespace qBittorrentSharp
 
 			await DeleteTorrents(hashes, deleteData);
 		}
-
-
 	}
 }

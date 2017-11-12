@@ -12,6 +12,9 @@ using qBittorrentSharp.Data;
 
 namespace qBittorrentSharp
 {
+	/// <summary>
+	/// Communicator for qBittorrent WebUI API.
+	/// </summary>
     public partial class API
     {
         private HttpClient client;
@@ -259,9 +262,9 @@ namespace qBittorrentSharp
 		/// <summary>
 		/// Gets states of torrent pieces.
 		/// </summary>
-		/// <param name="hash">Torrent hash.<</param>
+		/// <param name="hash">Torrent hash.</param>
 		/// <returns>States of torrent pieces.</returns>
-		public async Task<List<PieceStates>> GetTorrentPiecesStates(string hash)
+		public async Task<List<PieceState>> GetTorrentPiecesStates(string hash)
 		{
 			HttpResponseMessage reply = await Post(client, "/query/getPieceStates/" + hash);
 
@@ -272,8 +275,8 @@ namespace qBittorrentSharp
 			if (result == "")
 				return null;
 
-			var array = JsonConvert.DeserializeObject<PieceStates[]>(await reply.Content.ReadAsStringAsync());
-			return new List<PieceStates>(array);
+			var array = JsonConvert.DeserializeObject<PieceState[]>(await reply.Content.ReadAsStringAsync());
+			return new List<PieceState>(array);
 		}
 
 		/// <summary>
@@ -445,7 +448,7 @@ namespace qBittorrentSharp
 		/// <summary>
 		/// Downloads from disk.
 		/// </summary>
-		/// <param name="urls">List of URLs.</param>
+		/// <param name="filePaths">List of URLs.</param>
 		/// <param name="savePath">Download folder.</param>
 		/// <param name="cookie">Coookie sent to download the .torrent file..</param>
 		/// <param name="category">Category for the torrent.</param>

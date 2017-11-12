@@ -1,5 +1,8 @@
 ﻿namespace qBittorrentSharp.Enums
 {
+	/// <summary>
+	/// Locale.
+	/// </summary>
 	public enum Locale
 	{
 		/// <summary>

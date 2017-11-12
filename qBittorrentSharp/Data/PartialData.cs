@@ -3,16 +3,47 @@ using System.Collections.Generic;
 
 namespace qBittorrentSharp.Data
 {
-    public class PartialData
+	/// <summary>
+	/// Partial data. Changes since last request.
+	/// </summary>
+	public class PartialData
     {
+		/// <summary>
+		/// Response ID.
+		/// </summary>
 		public int Rid { get; set; }
+		/// <summary>
+		/// Whether the response contains all the data or partial data.
+		/// </summary>
 		public bool Full_Update { get; set; }
+		/// <summary>
+		/// Torrent list.
+		/// </summary>
 		public List<Torrent> Torrents { get; set; }
+		/// <summary>
+		/// List of hashes of torrent removed since last request.
+		/// </summary>
 		public List<string> Torrents_Removed { get; set; }
+		/// <summary>
+		/// List of categories added since last request.
+		/// </summary>
 		public List<string> Categories { get; set; }
+		/// <summary>
+		/// List of categories removed since last request.
+		/// </summary>
 		public List<string> Categories_Removed { get; set; }
+		/// <summary>
+		/// Priority system usage flag.
+		/// </summary>
+		public bool Queueing { get; set; }
+		/// <summary>
+		/// Server state.
+		/// </summary>
 		public TransferInfo Server_State { get; set; }
 
+		/// <summary>
+		///  Initializes a new instance of the <see cref="PartialData"/> class.
+		/// </summary>
 		public PartialData() { }
 
 		internal PartialData(PartialDataJSON p)
@@ -37,6 +68,7 @@ namespace qBittorrentSharp.Data
 				Categories_Removed = new List<string>(p.categories_removed);
 			else
 				Categories_Removed = new List<string>();
+			Queueing = p.queueing;
 			Server_State = new TransferInfo(p.server_state);
 		}
 	}
