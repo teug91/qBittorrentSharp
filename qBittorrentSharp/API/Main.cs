@@ -15,19 +15,17 @@ namespace qBittorrentSharp
 	/// <summary>
 	/// Communicator for qBittorrent WebUI API.
 	/// </summary>
-    public partial class API
+    public static partial class API
     {
-        private HttpClient client;
+		private static HttpClient client = new HttpClient();
 
 		/// <summary>
 		/// Initializes the API.
 		/// </summary>
 		/// <param name="baseAddress">Host address.</param>
 		/// <param name="timeout">Time before timeout.</param>
-        public API(string baseAddress, int timeout = 100)
+		public static void Initialize(string baseAddress, int timeout = 100)
         {
-            client = new HttpClient();
-
             baseAddress = baseAddress.Replace("\\", "/");
             if (baseAddress[baseAddress.Length - 1] != '/')
                 baseAddress += "/";
@@ -47,7 +45,7 @@ namespace qBittorrentSharp
 		/// <param name="username">Username.</param>
 		/// <param name="password">Password.</param>
 		/// <returns>True if successful, false if wrong username/password, null if unreachable.</returns>
-        public async Task<bool?> Login(string username, string password)
+        public static async Task<bool?> Login(string username, string password)
         {
             var content = new[]
             {
@@ -62,8 +60,11 @@ namespace qBittorrentSharp
 
             var result = await reply.Content.ReadAsStringAsync();
 
-            if (result == "Ok.")
-                return true;
+			if (result == "Ok.")
+			{
+				IsLoggedIn = true;
+				return true;
+			}
 
             return false;
         }
@@ -72,7 +73,7 @@ namespace qBittorrentSharp
 		/// Logs out of qBittorrent.
 		/// </summary>
 		/// <returns></returns>
-        public async Task Logout()
+        public static async Task Logout()
         {
             await Post(client, "/logout");
         }
@@ -81,7 +82,7 @@ namespace qBittorrentSharp
 		/// Gets API version.
 		/// </summary>
 		/// <returns>API version.</returns>
-        public async Task<int> GetApiVersion()
+        public static async Task<int> GetApiVersion()
         {
             var reply = await Post(client, "/version/api");
             return Int32.Parse(await reply.Content.ReadAsStringAsync());
@@ -91,7 +92,7 @@ namespace qBittorrentSharp
 		/// Gets minimum API version.
 		/// </summary>
 		/// <returns>Minumum API version.</returns>
-        public async Task<int> GetMinApiVersion()
+        public static async Task<int> GetMinApiVersion()
         {
             var reply = await Post(client, "/version/api_min");
             return Int32.Parse(await reply.Content.ReadAsStringAsync());
@@ -101,7 +102,7 @@ namespace qBittorrentSharp
 		/// Gets qBittorrent version.
 		/// </summary>
 		/// <returns>qBittorrent version.</returns>
-		public async Task<string> GetQbittorrentVersion()
+		public static async Task<string> GetQbittorrentVersion()
         {
             var reply = await Post(client, "/version/qbittorrent");
             return await reply.Content.ReadAsStringAsync();
@@ -111,7 +112,7 @@ namespace qBittorrentSharp
 		/// Shuts down qBittorrent.
 		/// </summary>
 		/// <returns></returns>
-        public async Task ShutdownQbittorrent()
+        public static async Task ShutdownQbittorrent()
         {
             await Post(client, "/command/shutdown");
         }
@@ -126,7 +127,7 @@ namespace qBittorrentSharp
 		/// <param name="limit">Maximum number of torrents returned.</param>
 		/// <param name="offset">Set offset (if less than 0, offset from end).</param>
 		/// <returns>List of torrents.</returns>
-		public async Task<List<Torrent>> GetTorrents(Status filter = Status.All,
+		public static async Task<List<Torrent>> GetTorrents(Status filter = Status.All,
 													 string category = null,
 													 Key sort = Key.Name,
 													 bool reverse = false,
@@ -152,7 +153,7 @@ namespace qBittorrentSharp
                 parameters += "offset=" + offset + "&";
 
             parameters = parameters.Remove(parameters.Length - 1);
-            reply = await Post(client, "/query/torrents" + parameters);
+			reply = await Post(client, "/query/torrents" + parameters);
 
 			if (reply == null)
 				return null;
@@ -168,14 +169,14 @@ namespace qBittorrentSharp
 				torrents.Add(new Torrent(t));
 
 			return torrents;
-        }
+		}
 
 		/// <summary>
 		/// Gets properties of a torrent.
 		/// </summary>
 		/// <param name="hash">Torrent hash.</param>
 		/// <returns>Torrent properties.</returns>
-        public async Task<TorrentProperties> GetTorrentProperties(string hash)
+        public static async Task<TorrentProperties> GetTorrentProperties(string hash)
         {
             HttpResponseMessage reply = await Post(client, "/query/propertiesGeneral/" + hash);
 
@@ -194,7 +195,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hash">Torrent hash.</param>
 		/// <returns>List of trackers.</returns>
-        public async Task<List<Tracker>> GetTorrentTrackers(string hash)
+        public static async Task<List<Tracker>> GetTorrentTrackers(string hash)
         {
             HttpResponseMessage reply = await Post(client, "/query/propertiesTrackers/" + hash);
 
@@ -220,7 +221,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hash">Torrent hash.</param>
 		/// <returns>List of web seeds.</returns>
-        public async Task<List<Uri>> GetTorrentWebSeeds(string hash)
+        public static async Task<List<Uri>> GetTorrentWebSeeds(string hash)
         {
             HttpResponseMessage reply = await Post(client, "/query/propertiesWebSeeds/" + hash);
 
@@ -244,7 +245,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hash">Torrent hash,</param>
 		/// <returns>Torrent contents.</returns>
-        public async Task<List<TorrentContents>> GetTorrentContents(string hash)
+        public static async Task<List<TorrentContents>> GetTorrentContents(string hash)
         {
             HttpResponseMessage reply = await Post(client, "/query/propertiesFiles/" + hash);
 
@@ -264,7 +265,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hash">Torrent hash.</param>
 		/// <returns>States of torrent pieces.</returns>
-		public async Task<List<PieceState>> GetTorrentPiecesStates(string hash)
+		public static async Task<List<PieceState>> GetTorrentPiecesStates(string hash)
 		{
 			HttpResponseMessage reply = await Post(client, "/query/getPieceStates/" + hash);
 
@@ -284,7 +285,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hash">Torrent hash.</param>
 		/// <returns>Hashes of all pieces of a torrent.</returns>
-		public async Task<List<string>> GetTorrentPiecesHashes(string hash)
+		public static async Task<List<string>> GetTorrentPiecesHashes(string hash)
 		{
 			HttpResponseMessage reply = await Post(client, "/query/getPieceHashes/" + hash);
 			if (reply == null)
@@ -303,7 +304,7 @@ namespace qBittorrentSharp
 		/// Gets info you usually see in qBittorrent status bar.
 		/// </summary>
 		/// <returns>Info you usually see in qBittorrent status bar.</returns>
-		public async Task<TransferInfo> GetTransferInfo()
+		public static async Task<TransferInfo> GetTransferInfo()
         {
             HttpResponseMessage reply = await Post(client, "/query/transferInfo");
 
@@ -321,7 +322,7 @@ namespace qBittorrentSharp
 		/// Gets qBittorrent preferences.
 		/// </summary>
 		/// <returns>qBittorrent preferences.</returns>
-		public async Task<Preferences> GetPreferences()
+		public static async Task<Preferences> GetPreferences()
         {
             HttpResponseMessage reply = await Post(client, "/query/preferences");
 
@@ -340,7 +341,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="rid">Requst ID.</param>
 		/// <returns>Changes since last request.</returns>
-		public async Task<PartialData> GetPartialData(int rid = 0)
+		public static async Task<PartialData> GetPartialData(int rid = 0)
         {
             HttpResponseMessage reply = await Post(client, "/sync/maindata?rid=" + rid);
 
@@ -363,7 +364,7 @@ namespace qBittorrentSharp
 		/// <param name="critical">Include critical messages.</param>
 		/// <param name="last_known_id">Exclude log entries with id less or equal to this.</param>
 		/// <returns>List of log entries.</returns>
-		public async Task<List<Log>> GetLog(bool normal = true, bool info = true, bool warning = true,
+		public static async Task<List<Log>> GetLog(bool normal = true, bool info = true, bool warning = true,
                                                 bool critical = true, int last_known_id = -1)
         {
             HttpResponseMessage reply = await Post(client, "/query/getLog?normal=" + normal.ToString()
@@ -401,7 +402,7 @@ namespace qBittorrentSharp
 		/// <param name="dlLimit">Set torrent download speed limit in bytes/second.</param>
 		/// <param name="squentialDownload">Enable sequential download.</param>
 		/// <param name="firstLastPiecePrio">Prioritize download first last piece.</param>
-		public async Task DownloadFromUrl(List<Uri> urls, string savePath = null, string cookie = null, string category = null,
+		public static async Task DownloadFromUrl(List<Uri> urls, string savePath = null, string cookie = null, string category = null,
                                             bool? skipChecking = null, bool? paused = null, bool? rootFolder = null,
 											string rename = null, int? upLimit = null, int? dlLimit = null,
 											string squentialDownload = null, bool? firstLastPiecePrio = null)
@@ -460,7 +461,7 @@ namespace qBittorrentSharp
 		/// <param name="dlLimit">Set torrent download speed limit in bytes/second.</param>
 		/// <param name="squentialDownload">Enable sequential download.</param>
 		/// <param name="firstLastPiecePrio">Prioritize download first last piece.</param>
-		public async Task DownloadFromDisk(List<string> filePaths, string savePath = null, string cookie = null, string category = null,
+		public static async Task DownloadFromDisk(List<string> filePaths, string savePath = null, string cookie = null, string category = null,
 											bool? skipChecking = null, bool? paused = null, bool? rootFolder = null,
 											string rename = null, int? upLimit = null, int? dlLimit = null,
 											string squentialDownload = null, bool? firstLastPiecePrio = null)
@@ -515,7 +516,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hash">Torrent hash.</param>
 		/// <param name="trackers">Trackers to be added.</param>
-		public async Task AddTrackers(string hash, List<Uri> trackers)
+		public static async Task AddTrackers(string hash, List<Uri> trackers)
 		{
 			var content = new[]
 			{
@@ -530,7 +531,7 @@ namespace qBittorrentSharp
 		/// Pauses torrent.
 		/// </summary>
 		/// <param name="hash">Torrent hash.</param>
-		public async Task PauseTorrent(string hash)
+		public static async Task PauseTorrent(string hash)
 		{
 			var content = new[]
 			{
@@ -543,7 +544,7 @@ namespace qBittorrentSharp
 		/// <summary>
 		/// Pauses all torrents.
 		/// </summary>
-		public async Task PauseAll()
+		public static async Task PauseAll()
         {
             await Post(client, "/command/pauseAll");
         }
@@ -552,7 +553,7 @@ namespace qBittorrentSharp
 		/// Resumes torrent.
 		/// </summary>
 		/// <param name="hash">Torrent hash.</param>
-		public async Task ResumeTorrent(string hash)
+		public static async Task ResumeTorrent(string hash)
 		{
 			var content = new[]
 			{
@@ -565,7 +566,7 @@ namespace qBittorrentSharp
 		/// <summary>
 		/// Resumes all torrents.
 		/// </summary>
-		public async Task ResumeAll()
+		public static async Task ResumeAll()
 		{
 			await Post(client, "/command/resumeAll");
 		}
@@ -575,7 +576,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hashes">Hashes of torrents to be deleted.</param>
 		/// <param name="deleteData">Delete downloaded data.</param>
-		public async Task DeleteTorrents(List<string> hashes, bool deleteData = false)
+		public static async Task DeleteTorrents(List<string> hashes, bool deleteData = false)
 		{
 			var content = new[]
 			{
@@ -593,7 +594,7 @@ namespace qBittorrentSharp
 		/// Rechecks torrent.
 		/// </summary>
 		/// <param name="hash">Torrent hash.</param>
-		public async Task RecheckTorrent(string hash)
+		public static async Task RecheckTorrent(string hash)
 		{
 			var content = new[]
 			{
@@ -607,7 +608,7 @@ namespace qBittorrentSharp
 		/// Increases priority of torrents. Torrent Queing needs to be enabled.
 		/// </summary>
 		/// <param name="hashes">Torrent hashes.</param>
-		public async Task IncreaseTorrentPriority(List<string> hashes)
+		public static async Task IncreaseTorrentPriority(List<string> hashes)
 		{
 			var content = new[]
 			{
@@ -621,7 +622,7 @@ namespace qBittorrentSharp
 		/// Decreases priority of torrents. Torrent Queing needs to be enabled.
 		/// </summary>
 		/// <param name="hashes">Torrent hashes.</param>
-		public async Task DecreaseTorrentPriority(List<string> hashes)
+		public static async Task DecreaseTorrentPriority(List<string> hashes)
 		{
 			var content = new[]
 			{
@@ -635,7 +636,7 @@ namespace qBittorrentSharp
 		/// Sets maximum priority of torrents. Torrent Queing needs to be enabled.
 		/// </summary>
 		/// <param name="hashes">Torrent hashes.</param>
-		public async Task MaxTorrentPriority(List<string> hashes)
+		public static async Task MaxTorrentPriority(List<string> hashes)
 		{
 			var content = new[]
 			{
@@ -649,7 +650,7 @@ namespace qBittorrentSharp
 		/// Sets minimum priority of torrents. Torrent Queing needs to be enabled.
 		/// </summary>
 		/// <param name="hashes">Torrent hashes.</param>
-		public async Task MinTorrentPriority(List<string> hashes)
+		public static async Task MinTorrentPriority(List<string> hashes)
 		{
 			var content = new[]
 			{
@@ -666,7 +667,7 @@ namespace qBittorrentSharp
 		/// <param name="fileId">File id.</param>
 		/// <param name="priority">File priority.</param>
 		/// <returns></returns>
-		public async Task SetFilePriority(string hash, int fileId, Priority priority)
+		public static async Task SetFilePriority(string hash, int fileId, Priority priority)
 		{
 			var content = new[]
 			{
@@ -682,7 +683,7 @@ namespace qBittorrentSharp
 		/// Gets global download speed limit.
 		/// </summary>
 		/// <returns>Global download speed limit in bytes/second; this value will be zero if no limit is applied.</returns>
-		public async Task<int> GetGlobalDownloadSpeedLimit()
+		public static async Task<int> GetGlobalDownloadSpeedLimit()
 		{
 			HttpResponseMessage reply = await Post(client, "/command/getGlobalDlLimit");
 
@@ -693,7 +694,7 @@ namespace qBittorrentSharp
 		/// Sets global download speed limit.
 		/// </summary>
 		/// <param name="limit">Global download speed limit in bytes/second.</param>
-		public async Task SetGlobalDownloadSpeedLimit(long limit)
+		public static async Task SetGlobalDownloadSpeedLimit(long limit)
 		{
 			var content = new[]
 			{
@@ -707,7 +708,7 @@ namespace qBittorrentSharp
 		/// Getg global upload speed limit.
 		/// </summary>
 		/// <returns>Global upload speed limit in bytes/second; this value will be zero if no limit is applied.</returns>
-		public async Task<int> GetGlobalUploadSpeedLimit()
+		public static async Task<int> GetGlobalUploadSpeedLimit()
 		{
 			HttpResponseMessage reply = await Post(client, "/command/getGlobalUpLimit");
 
@@ -718,7 +719,7 @@ namespace qBittorrentSharp
 		/// Sets global upload speed limit.
 		/// </summary>
 		/// <param name="limit">Global upload speed limit in bytes/second.</param>
-		public async Task SetGlobalUploadSpeedLimit(long limit)
+		public static async Task SetGlobalUploadSpeedLimit(long limit)
 		{
 			var content = new[]
 			{
@@ -732,7 +733,7 @@ namespace qBittorrentSharp
 		/// Get download speed limit of torrents.
 		/// </summary>
 		/// <returns>Download speed limit of torrents in bytes/second.</returns>
-		public async Task<List<KeyValuePair<string, int>>> GetTorrentDownloadSpeedLimit(List<string> hashes)
+		public static async Task<List<KeyValuePair<string, int>>> GetTorrentDownloadSpeedLimit(List<string> hashes)
 		{
 			var content = new[]
 			{
@@ -758,7 +759,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hashes">Torrent hashes.</param>
 		/// <param name="limit">Download speed limit of torrents in bytes/second.</param>
-		public async Task SetTorrentDownloadSpeedLimit(List<string> hashes, int limit)
+		public static async Task SetTorrentDownloadSpeedLimit(List<string> hashes, int limit)
 		{
 			var content = new[]
 			{
@@ -773,7 +774,7 @@ namespace qBittorrentSharp
 		/// Gets upload speed limit of torrents.
 		/// </summary>
 		/// <returns>Upload speed limit of torrents in bytes/second.</returns>
-		public async Task<List<KeyValuePair<string, int>>> GetTorrentUploadSpeedLimit(List<string> hashes)
+		public static async Task<List<KeyValuePair<string, int>>> GetTorrentUploadSpeedLimit(List<string> hashes)
 		{
 			var content = new[]
 			{
@@ -799,7 +800,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hashes">Torrent hashes.</param>
 		/// <param name="limit">Upload speed limit of torrents.</param>
-		public async Task SetTorrentUploadSpeedLimit(List<string> hashes, int limit)
+		public static async Task SetTorrentUploadSpeedLimit(List<string> hashes, int limit)
 		{
 			var content = new[]
 			{
@@ -815,7 +816,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hashes">Torrent hashes.</param>
 		/// <param name="location">Torrent location.</param>
-		public async Task SetTorrentsLocation(List<string> hashes, string location)
+		public static async Task SetTorrentsLocation(List<string> hashes, string location)
 		{
 			var content = new[]
 			{
@@ -831,7 +832,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hash">Torrent hash.</param>
 		/// <param name="name">Torrent name.</param>
-		public async Task SetTorrentName(string hash, string name)
+		public static async Task SetTorrentName(string hash, string name)
 		{
 			var content = new[]
 			{
@@ -847,7 +848,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hashes">Torrent hashes.</param>
 		/// <param name="categoryName">Name of category.</param>
-		public async Task SetTorrentCategory(List<string> hashes, string categoryName)
+		public static async Task SetTorrentCategory(List<string> hashes, string categoryName)
 		{
 			var content = new[]
 			{
@@ -863,7 +864,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="categoryName">Category name.</param>
 		/// <returns></returns>
-		public async Task AddNewCategory(string categoryName)
+		public static async Task AddNewCategory(string categoryName)
 		{
 			var content = new[]
 			{
@@ -878,7 +879,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="categoryNames">Category name.</param>
 		/// <returns></returns>
-		public async Task RemoveCategories(List<string> categoryNames)
+		public static async Task RemoveCategories(List<string> categoryNames)
 		{
 			var content = new[]
 			{
@@ -894,7 +895,7 @@ namespace qBittorrentSharp
 		/// <param name="hashes">Torrent hashes.</param>
 		/// <param name="autoTorrentMgmt">Automatic torrent management.</param>
 		/// <returns></returns>
-		public async Task SetAutoTorrentMgmt(List<string> hashes, bool autoTorrentMgmt)
+		public static async Task SetAutoTorrentMgmt(List<string> hashes, bool autoTorrentMgmt)
 		{
 			var content = new[]
 			{
@@ -909,7 +910,7 @@ namespace qBittorrentSharp
 		/// Sets qBittorrent preferences.
 		/// </summary>
 		/// <param name="preferences">qBittorrent preferences.</param>
-		public async Task SetPreferences(Preferences preferences)
+		public static async Task SetPreferences(Preferences preferences)
 		{
 			var jsonObject = JsonConvert.SerializeObject(new PreferencesJSON(preferences),
 														Formatting.None,
@@ -929,7 +930,7 @@ namespace qBittorrentSharp
 		/// Gets the state of the alternative speed limits.
 		/// </summary>
 		/// <returns>True if alternative speed limits is enabled.</returns>
-		public async Task<bool> IsAltSpeedLimitsEnabled()
+		public static async Task<bool> IsAltSpeedLimitsEnabled()
 		{
 			HttpResponseMessage reply = await Post(client, "/command/alternativeSpeedLimitsEnabled");
 
@@ -942,7 +943,7 @@ namespace qBittorrentSharp
 		/// <summary>
 		/// Toggles the state of the alternative speed limits.
 		/// </summary>
-		public async Task ToggleAltSpeedLimits()
+		public static async Task ToggleAltSpeedLimits()
 		{
 			await Post(client, "/command/toggleAlternativeSpeedLimits");
 		}
@@ -951,7 +952,7 @@ namespace qBittorrentSharp
 		/// Toggles sequential download.
 		/// </summary>
 		/// <param name="hashes">Torrent hashes.</param>
-		public async Task ToggleSequentialDownload(List<string> hashes)
+		public static async Task ToggleSequentialDownload(List<string> hashes)
 		{
 			var content = new[]
 			{
@@ -966,7 +967,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hashes"></param>
 		/// <returns></returns>
-		public async Task ToggleFirstLastPiecePrio(List<string> hashes)
+		public static async Task ToggleFirstLastPiecePrio(List<string> hashes)
 		{
 			var content = new[]
 			{
@@ -981,7 +982,7 @@ namespace qBittorrentSharp
 		/// </summary>
 		/// <param name="hashes">Torrent hashes.</param>
 		/// <param name="activate">Whether to activate first/last piece priority of torrents.</param>
-		public async Task SetForceStart(List<string> hashes, bool activate)
+		public static async Task SetForceStart(List<string> hashes, bool activate)
 		{
 			var content = new[]
 			{
@@ -998,7 +999,7 @@ namespace qBittorrentSharp
 		/// <param name="hashes">Torrent hashes.</param>
 		/// <param name="activate">Whether to activate super seeding of torrents.</param>
 		/// <returns></returns>
-		public async Task SetSuperSeeding(List<string> hashes, bool activate)
+		public static async Task SetSuperSeeding(List<string> hashes, bool activate)
 		{
 			var content = new[]
 			{

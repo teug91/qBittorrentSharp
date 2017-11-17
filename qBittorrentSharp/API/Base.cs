@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace qBittorrentSharp
 {
-    public partial class API
+    public static partial class API
     {
         private static async Task<HttpResponseMessage> Get(HttpClient client, string requestUri)
         {
@@ -13,7 +13,7 @@ namespace qBittorrentSharp
             {
                 var reply = await client.GetAsync(requestUri);
 				if (!reply.IsSuccessStatusCode)
-					throw new HttpRequestException(reply.ReasonPhrase);
+					throw new QBTException(reply.StatusCode, await reply.Content.ReadAsStringAsync());
 				return reply;
 			}
 
@@ -29,7 +29,7 @@ namespace qBittorrentSharp
             {
                 var reply = await client.PostAsync(requestUri, content);
 				if (!reply.IsSuccessStatusCode)
-                    throw new HttpRequestException(reply.ReasonPhrase);
+					throw new QBTException(reply.StatusCode, await reply.Content.ReadAsStringAsync());
 				return reply;
             }
 
@@ -45,7 +45,7 @@ namespace qBittorrentSharp
             {
                 var reply = await client.PostAsync(requestUri, content);
 				if (!reply.IsSuccessStatusCode)
-					throw new HttpRequestException(reply.ReasonPhrase);
+					throw new QBTException(reply.StatusCode, await reply.Content.ReadAsStringAsync());
 				return reply;
 			}
 
