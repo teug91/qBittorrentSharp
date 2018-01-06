@@ -17,7 +17,7 @@ namespace qBittorrentSharp
 	/// </summary>
     public static partial class API
     {
-		private static HttpClient client = new HttpClient();
+		private static HttpClient client;
 
 		/// <summary>
 		/// Initializes the API.
@@ -26,7 +26,10 @@ namespace qBittorrentSharp
 		/// <param name="timeout">Time before timeout.</param>
 		public static void Initialize(string baseAddress, int timeout = 100)
         {
-            baseAddress = baseAddress.Replace("\\", "/");
+			if (client != null)
+				client.Dispose();
+			client = new HttpClient();
+			baseAddress = baseAddress.Replace("\\", "/");
             if (baseAddress[baseAddress.Length - 1] != '/')
                 baseAddress += "/";
 
@@ -61,10 +64,7 @@ namespace qBittorrentSharp
             var result = await reply.Content.ReadAsStringAsync();
 
 			if (result == "Ok.")
-			{
-				IsLoggedIn = true;
 				return true;
-			}
 
             return false;
         }

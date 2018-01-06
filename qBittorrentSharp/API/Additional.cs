@@ -38,15 +38,17 @@ namespace qBittorrentSharp
 		/// <returns>
 		/// Returns false if any torrents are not paused.
 		/// </returns>
-		public static async Task<bool> AreAllTorrentsPaused()
+		public static async Task<bool?> AreAllTorrentsPaused()
 		{
 			var torrents = await GetTorrents();
 
-			foreach (var torrent in torrents)
-			{
-				if (torrent.State != TorrentState.PausedDL || torrent.State != TorrentState.PausedUP)
-					return false;
-			}
+			if (torrents == null)
+				return null;
+
+
+				foreach (var torrent in torrents)
+					if (torrent.State != TorrentState.PausedDL && torrent.State != TorrentState.PausedUP)
+						return false;
 
 			return true;
 		}
