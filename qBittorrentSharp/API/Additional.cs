@@ -29,7 +29,8 @@ namespace qBittorrentSharp
 				}
 			}
 
-			await DeleteTorrents(hashes, deleteData);
+			if (hashes.Count != 0)
+				await DeleteTorrents(hashes, deleteData);
 		}
 
 		/// <summary>
@@ -47,8 +48,19 @@ namespace qBittorrentSharp
 
 
 				foreach (var torrent in torrents)
-					if (torrent.State != TorrentState.PausedDL && torrent.State != TorrentState.PausedUP)
-						return false;
+					if (torrent.State == TorrentState.QueuedUP
+						|| torrent.State == TorrentState.QueuedDL
+						|| torrent.State == TorrentState.QueuedDL
+						|| torrent.State == TorrentState.QueuedDL
+						|| torrent.State == TorrentState.Uploading
+						|| torrent.State == TorrentState.CheckingUP
+						|| torrent.State == TorrentState.CheckingDL
+						|| torrent.State == TorrentState.Downloading
+						|| torrent.State == TorrentState.StalledDL
+						|| torrent.State == TorrentState.MetaDL
+						|| torrent.State == TorrentState.ForcedDL
+						|| torrent.State == TorrentState.ForcedUP)
+					return false;
 
 			return true;
 		}

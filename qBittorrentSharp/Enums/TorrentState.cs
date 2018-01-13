@@ -53,6 +53,14 @@
 		/// <summary>
 		/// Torrent has just started downloading and is fetching metadata.
 		/// </summary>
-		MetaDL
+		MetaDL,
+		/// <summary>
+		/// Torrent is being forced downloaded and data is being transferred.
+		/// </summary>
+		ForcedDL,
+		/// <summary>
+		/// Torrent is being forced uploaded, but no connection were made.
+		/// </summary>
+		ForcedUP
 	};
 }

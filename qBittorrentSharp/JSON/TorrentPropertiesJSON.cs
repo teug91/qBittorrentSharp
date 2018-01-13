@@ -3,7 +3,7 @@
     internal class TorrentPropertiesJSON
     {
         public string Save_Path { get; set; }
-        public int Creation_Date { get; set; }
+        public long Creation_Date { get; set; }
         public long Piece_Size { get; set; }
         public string Comment { get; set; }
         public long Total_Wasted { get; set; }
@@ -18,8 +18,8 @@
         public int Nb_Connections { get; set; }
         public int Nb_Connections_Limit { get; set; }
         public float Share_Ratio { get; set; }
-        public int Addition_Date { get; set; }
-        public int Completion_Date { get; set; }
+        public long Addition_Date { get; set; }
+        public long Completion_Date { get; set; }
         public string Created_By { get; set; }
         public long Dl_Speed_Avg { get; set; }
         public long Dl_Speed { get; set; }
