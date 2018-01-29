@@ -15,6 +15,13 @@ namespace qBittorrentSharp
 		public static async Task DeleteAfterMaxSeedTime(TimeSpan maxSeedTime, bool deleteData)
 		{
 			var torrents = await GetTorrents();
+
+			if (torrents == null)
+				return;
+
+			if (torrents.Count == 0)
+				return;
+
 			var hashes = new List<string>();
 
 			foreach (var torrent in torrents)
