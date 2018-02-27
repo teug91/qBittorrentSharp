@@ -26,13 +26,48 @@ namespace qBittorrentSharp
 
 			foreach (var torrent in torrents)
 			{
-				var seedingTimeSpan = (await GetTorrentProperties(torrent.Hash)).Seeding_Time;
-				if (seedingTimeSpan != null)
+				var torrentProperties = await GetTorrentProperties(torrent.Hash);
+
+				if (torrentProperties != null)
 				{
-					if (seedingTimeSpan > maxSeedTime)
+					var seedingTimeSpan = torrentProperties.Seeding_Time;
+					if (seedingTimeSpan != null)
 					{
-						hashes.Add(torrent.Hash);
+						if (seedingTimeSpan > maxSeedTime)
+						{
+							hashes.Add(torrent.Hash);
+						}
 					}
+				}
+			}
+
+			if (hashes.Count != 0)
+				await DeleteTorrents(hashes, deleteData);
+		}
+
+		/// <summary>
+		/// Deletes torrents that have seeded longer than maximum time.
+		/// </summary>
+		/// <param name="maxRatio">Maximum ratio when seeding.</param>
+		/// <param name="deleteData">Delete data if True.</param>
+		public static async Task DeleteAfterMaxRatio(float maxRatio, bool deleteData)
+		{
+			var torrents = await GetTorrents();
+
+			if (torrents == null)
+				return;
+
+			if (torrents.Count == 0)
+				return;
+
+			var hashes = new List<string>();
+
+			foreach (var torrent in torrents)
+			{
+				var ratio = torrent.Ratio;
+				if (ratio > maxRatio)
+				{
+					hashes.Add(torrent.Hash);
 				}
 			}
 
