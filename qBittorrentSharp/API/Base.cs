@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace qBittorrentSharp
 {
@@ -13,7 +14,11 @@ namespace qBittorrentSharp
             {
                 var reply = await client.GetAsync(requestUri);
 				if (!reply.IsSuccessStatusCode)
+				{
+					if (reply.StatusCode != HttpStatusCode.Unauthorized)
+						RaiseDisconnectedEvent();
 					throw new QBTException(reply.StatusCode, await reply.Content.ReadAsStringAsync());
+				}
 				return reply;
 			}
 
@@ -29,7 +34,11 @@ namespace qBittorrentSharp
             {
                 var reply = await client.PostAsync(requestUri, content);
 				if (!reply.IsSuccessStatusCode)
+				{
+					if (reply.StatusCode != HttpStatusCode.Unauthorized)
+						RaiseDisconnectedEvent();
 					throw new QBTException(reply.StatusCode, await reply.Content.ReadAsStringAsync());
+				}
 				return reply;
             }
 
@@ -45,7 +54,11 @@ namespace qBittorrentSharp
             {
                 var reply = await client.PostAsync(requestUri, content);
 				if (!reply.IsSuccessStatusCode)
+				{
+					if (reply.StatusCode != HttpStatusCode.Unauthorized)
+						RaiseDisconnectedEvent();
 					throw new QBTException(reply.StatusCode, await reply.Content.ReadAsStringAsync());
+				}
 				return reply;
 			}
 

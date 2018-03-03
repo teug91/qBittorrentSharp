@@ -20,6 +20,11 @@ namespace qBittorrentSharp
 		private static HttpClient client;
 
 		/// <summary>
+		/// Fires when qBittorrent becomes unreachable.
+		/// </summary>
+		public static event EventHandler Disconnected;
+
+		/// <summary>
 		/// Initializes the API.
 		/// </summary>
 		/// <param name="baseAddress">Host address.</param>
@@ -1008,6 +1013,11 @@ namespace qBittorrentSharp
 			};
 
 			await Post(client, "/command/setSuperSeeding", new FormUrlEncodedContent(content));
+		}
+
+		private static void RaiseDisconnectedEvent()
+		{
+			Disconnected?.Invoke(typeof(API), EventArgs.Empty);
 		}
 	}
 }
