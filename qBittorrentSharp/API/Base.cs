@@ -26,6 +26,12 @@ namespace qBittorrentSharp
 			{
 				return null;
 			}
+
+			catch (TaskCanceledException)
+			{
+				RaiseDisconnectedEvent();
+				return null;
+			}
 		}
 
         private static async Task<HttpResponseMessage> Post(HttpClient client, string requestUri, FormUrlEncodedContent content = null)
@@ -46,7 +52,13 @@ namespace qBittorrentSharp
             {
                 return null;
             }
-        }
+
+			catch (TaskCanceledException)
+			{
+				RaiseDisconnectedEvent();
+				return null;
+			}
+		}
 
         private static async Task<HttpResponseMessage> Post(HttpClient client, string requestUri, MultipartFormDataContent content)
         {
@@ -64,6 +76,12 @@ namespace qBittorrentSharp
 
 			catch (HttpRequestException)
 			{
+				return null;
+			}
+
+			catch (TaskCanceledException)
+			{
+				RaiseDisconnectedEvent();
 				return null;
 			}
 		}
