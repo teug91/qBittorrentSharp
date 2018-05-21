@@ -34,11 +34,11 @@ namespace qBittorrentSharp
 			}
 		}
 
-        private static async Task<HttpResponseMessage> Post(HttpClient client, string requestUri, FormUrlEncodedContent content = null)
-        {
-            try
-            {
-                var reply = await client.PostAsync(requestUri, content);
+		private static async Task<HttpResponseMessage> Post(HttpClient client, string requestUri, StringContent content = null)
+		{
+			try
+			{
+				var reply = await client.PostAsync(requestUri, content);
 				if (!reply.IsSuccessStatusCode)
 				{
 					if (reply.StatusCode != HttpStatusCode.Unauthorized)
@@ -46,12 +46,12 @@ namespace qBittorrentSharp
 					throw new QBTException(reply.StatusCode, await reply.Content.ReadAsStringAsync());
 				}
 				return reply;
-            }
+			}
 
-            catch (HttpRequestException)
-            {
-                return null;
-            }
+			catch (HttpRequestException)
+			{
+				return null;
+			}
 
 			catch (TaskCanceledException)
 			{
@@ -60,7 +60,7 @@ namespace qBittorrentSharp
 			}
 		}
 
-        private static async Task<HttpResponseMessage> Post(HttpClient client, string requestUri, MultipartFormDataContent content)
+		private static async Task<HttpResponseMessage> Post(HttpClient client, string requestUri, MultipartFormDataContent content)
         {
             try
             {
@@ -104,6 +104,11 @@ namespace qBittorrentSharp
 			returnString = returnString.Remove(returnString.Length - 1);
 
 			return returnString;
+		}
+
+		private static StringContent ToStringContent(string text)
+		{
+			return new StringContent(text, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
 		}
 	}
 }

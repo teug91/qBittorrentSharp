@@ -55,15 +55,10 @@ namespace qBittorrentSharp
 		/// <returns>True if successful, false if wrong username/password, null if unreachable.</returns>
         public static async Task<bool?> Login(string username, string password)
         {
-            var content = new[]
-            {
-                new KeyValuePair<string, string>("username", username),
-                new KeyValuePair<string, string>("password", password)
-            };
+			var content = ToStringContent("username=" + username + "&password=" + password);
+			var reply = await Post(client, "/login", content);
 
-            var reply = await Post(client, "/login", new FormUrlEncodedContent(content));
-
-            if (reply == null)
+			if (reply == null)
                 return null;
 
             var result = await reply.Content.ReadAsStringAsync();
@@ -523,13 +518,8 @@ namespace qBittorrentSharp
 		/// <param name="trackers">Trackers to be added.</param>
 		public static async Task AddTrackers(string hash, List<Uri> trackers)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hash", hash),
-				new KeyValuePair<string, string>("urls", ListToString(trackers, '\n'))
-			};
-
-			await Post(client, "/command/addTrackers", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hash=" + hash + "&urls=" + ListToString(trackers, '\n'));
+			await Post(client, "/command/addTrackers", content);
 		}
 
 		/// <summary>
@@ -538,12 +528,8 @@ namespace qBittorrentSharp
 		/// <param name="hash">Torrent hash.</param>
 		public static async Task PauseTorrent(string hash)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hash", hash)
-			};
-
-			await Post(client, "/command/pause", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hash=" + hash);
+			await Post(client, "/command/pause", content);
 		}
 
 		/// <summary>
@@ -560,12 +546,8 @@ namespace qBittorrentSharp
 		/// <param name="hash">Torrent hash.</param>
 		public static async Task ResumeTorrent(string hash)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hash", hash)
-			};
-
-			await Post(client, "/command/resume", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hash=" + hash);
+			await Post(client, "/command/resume", content);
 		}
 
 		/// <summary>
@@ -583,16 +565,13 @@ namespace qBittorrentSharp
 		/// <param name="deleteData">Delete downloaded data.</param>
 		public static async Task DeleteTorrents(List<string> hashes, bool deleteData = false)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
-			};
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|'));
 
 			if (deleteData)
-				await Post(client, "/command/deletePerm", new FormUrlEncodedContent(content));
+				await Post(client, "/command/deletePerm", content);
 
 			else
-				await Post(client, "/command/delete", new FormUrlEncodedContent(content));
+				await Post(client, "/command/delete", content);
 		}
 
 		/// <summary>
@@ -601,12 +580,8 @@ namespace qBittorrentSharp
 		/// <param name="hash">Torrent hash.</param>
 		public static async Task RecheckTorrent(string hash)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hash", hash)
-			};
-
-			await Post(client, "/command/recheck", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hash=" + hash);
+			await Post(client, "/command/recheck", content);
 		}
 
 		/// <summary>
@@ -615,12 +590,8 @@ namespace qBittorrentSharp
 		/// <param name="hashes">Torrent hashes.</param>
 		public static async Task IncreaseTorrentPriority(List<string> hashes)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
-			};
-
-			await Post(client, "/command/increasePrio", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|'));
+			await Post(client, "/command/increasePrio", content);
 		}
 
 		/// <summary>
@@ -629,12 +600,8 @@ namespace qBittorrentSharp
 		/// <param name="hashes">Torrent hashes.</param>
 		public static async Task DecreaseTorrentPriority(List<string> hashes)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
-			};
-
-			await Post(client, "/command/decreasePrio", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|'));
+			await Post(client, "/command/decreasePrio", content);
 		}
 
 		/// <summary>
@@ -643,12 +610,8 @@ namespace qBittorrentSharp
 		/// <param name="hashes">Torrent hashes.</param>
 		public static async Task MaxTorrentPriority(List<string> hashes)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
-			};
-
-			await Post(client, "/command/topPrio", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|'));
+			await Post(client, "/command/topPrio", content);
 		}
 
 		/// <summary>
@@ -657,12 +620,8 @@ namespace qBittorrentSharp
 		/// <param name="hashes">Torrent hashes.</param>
 		public static async Task MinTorrentPriority(List<string> hashes)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
-			};
-
-			await Post(client, "/command/bottomPrio", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|'));
+			await Post(client, "/command/bottomPrio", content);
 		}
 
 		/// <summary>
@@ -674,14 +633,8 @@ namespace qBittorrentSharp
 		/// <returns></returns>
 		public static async Task SetFilePriority(string hash, int fileId, Priority priority)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hash", hash),
-				new KeyValuePair<string, string>("id", fileId.ToString()),
-				new KeyValuePair<string, string>("priority", ((int)priority).ToString())
-			};
-
-			await Post(client, "/command/setFilePrio", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hash=" + hash + "&id=" + fileId.ToString() + "&priority=" + ((int)priority).ToString());
+			await Post(client, "/command/setFilePrio", content);
 		}
 
 		/// <summary>
@@ -701,12 +654,8 @@ namespace qBittorrentSharp
 		/// <param name="limit">Global download speed limit in bytes/second.</param>
 		public static async Task SetGlobalDownloadSpeedLimit(long limit)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("limit", limit.ToString())
-			};
-
-			await Post(client, "/command/setGlobalDlLimit", new FormUrlEncodedContent(content));
+			var content = ToStringContent("limit=" + limit.ToString());
+			await Post(client, "/command/setGlobalDlLimit", content);
 		}
 
 		/// <summary>
@@ -726,12 +675,8 @@ namespace qBittorrentSharp
 		/// <param name="limit">Global upload speed limit in bytes/second.</param>
 		public static async Task SetGlobalUploadSpeedLimit(long limit)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("limit", limit.ToString())
-			};
-
-			await Post(client, "/command/setGlobalUpLimit", new FormUrlEncodedContent(content));
+			var content = ToStringContent("limit=" + limit.ToString());
+			await Post(client, "/command/setGlobalUpLimit", content);
 		}
 
 		/// <summary>
@@ -740,12 +685,8 @@ namespace qBittorrentSharp
 		/// <returns>Download speed limit of torrents in bytes/second.</returns>
 		public static async Task<List<KeyValuePair<string, int>>> GetTorrentDownloadSpeedLimit(List<string> hashes)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
-			};
-
-			var reply = await Post(client, "/command/getTorrentsDlLimit", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|'));
+			var reply = await Post(client, "/command/getTorrentsDlLimit", content);
 			var objectList = JsonConvert.DeserializeObject<object>(await reply.Content.ReadAsStringAsync());
 
 			var torrentDlLimits = new List<KeyValuePair<string, int>>();
@@ -766,13 +707,8 @@ namespace qBittorrentSharp
 		/// <param name="limit">Download speed limit of torrents in bytes/second.</param>
 		public static async Task SetTorrentDownloadSpeedLimit(List<string> hashes, int limit)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
-				new KeyValuePair<string, string>("limit", limit.ToString())
-			};
-
-			await Post(client, "/command/setTorrentsDlLimit", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|') + "&limit=" + limit.ToString());
+			await Post(client, "/command/setTorrentsDlLimit", content);
 		}
 
 		/// <summary>
@@ -781,12 +717,8 @@ namespace qBittorrentSharp
 		/// <returns>Upload speed limit of torrents in bytes/second.</returns>
 		public static async Task<List<KeyValuePair<string, int>>> GetTorrentUploadSpeedLimit(List<string> hashes)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
-			};
-
-			var reply = await Post(client, "/command/getTorrentsUpLimit", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|'));
+			var reply = await Post(client, "/command/getTorrentsUpLimit", content);
 			var objectList = JsonConvert.DeserializeObject<object>(await reply.Content.ReadAsStringAsync());
 
 			var torrentUpLimits = new List<KeyValuePair<string, int>>();
@@ -807,13 +739,8 @@ namespace qBittorrentSharp
 		/// <param name="limit">Upload speed limit of torrents.</param>
 		public static async Task SetTorrentUploadSpeedLimit(List<string> hashes, int limit)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
-				new KeyValuePair<string, string>("limit", limit.ToString())
-			};
-
-			await Post(client, "/command/setTorrentsUpLimit", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|') + "&limit=" + limit.ToString());
+			await Post(client, "/command/setTorrentsUpLimit", content);
 		}
 
 		/// <summary>
@@ -823,13 +750,8 @@ namespace qBittorrentSharp
 		/// <param name="location">Torrent location.</param>
 		public static async Task SetTorrentsLocation(List<string> hashes, string location)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
-				new KeyValuePair<string, string>("location", location)
-			};
-
-			await Post(client, "/command/setLocation", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|') + "&location=" + location);
+			await Post(client, "/command/setLocation", content);
 		}
 
 		/// <summary>
@@ -839,13 +761,8 @@ namespace qBittorrentSharp
 		/// <param name="name">Torrent name.</param>
 		public static async Task SetTorrentName(string hash, string name)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hash", hash),
-				new KeyValuePair<string, string>("name", name)
-			};
-
-			await Post(client, "/command/rename", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hash=" + hash + "&name=" + name);
+			await Post(client, "/command/rename", content);
 		}
 
 		/// <summary>
@@ -855,13 +772,8 @@ namespace qBittorrentSharp
 		/// <param name="categoryName">Name of category.</param>
 		public static async Task SetTorrentCategory(List<string> hashes, string categoryName)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
-				new KeyValuePair<string, string>("category", categoryName)
-			};
-
-			await Post(client, "/command/setCategory", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|') + "&category=" + categoryName);
+			await Post(client, "/command/setCategory", content);
 		}
 
 		/// <summary>
@@ -871,12 +783,8 @@ namespace qBittorrentSharp
 		/// <returns></returns>
 		public static async Task AddNewCategory(string categoryName)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("category", categoryName)
-			};
-
-			await Post(client, "/command/setCategory", new FormUrlEncodedContent(content));
+			var content = ToStringContent("category=" + categoryName);
+			await Post(client, "/command/setCategory", content);
 		}
 
 		/// <summary>
@@ -886,12 +794,8 @@ namespace qBittorrentSharp
 		/// <returns></returns>
 		public static async Task RemoveCategories(List<string> categoryNames)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("categories", ListToString(categoryNames, '\n')),
-			};
-
-			await Post(client, "/command/removeCategories", new FormUrlEncodedContent(content));
+			var content = ToStringContent("categories=" + ListToString(categoryNames, '\n'));
+			await Post(client, "/command/removeCategories", content);
 		}
 
 		/// <summary>
@@ -902,13 +806,8 @@ namespace qBittorrentSharp
 		/// <returns></returns>
 		public static async Task SetAutoTorrentMgmt(List<string> hashes, bool autoTorrentMgmt)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
-				new KeyValuePair<string, string>("enable", autoTorrentMgmt.ToString().ToLower())
-			};
-
-			await Post(client, "/command/setAutoTMM", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|') + "&enable=" + autoTorrentMgmt.ToString().ToLower());
+			await Post(client, "/command/setAutoTMM", content);
 		}
 
 		/// <summary>
@@ -923,12 +822,8 @@ namespace qBittorrentSharp
 														{
 															NullValueHandling = NullValueHandling.Ignore
 														});
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("json", jsonObject)
-			};
-
-			await Post(client, "/command/setPreferences", new FormUrlEncodedContent(content));
+			var content = ToStringContent("json=" + jsonObject);
+			await Post(client, "/command/setPreferences", content);
 		}
 
 		/// <summary>
@@ -959,12 +854,8 @@ namespace qBittorrentSharp
 		/// <param name="hashes">Torrent hashes.</param>
 		public static async Task ToggleSequentialDownload(List<string> hashes)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
-			};
-
-			await Post(client, "/command/toggleSequentialDownload", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|'));
+			await Post(client, "/command/toggleSequentialDownload", content);
 		}
 
 		/// <summary>
@@ -974,12 +865,8 @@ namespace qBittorrentSharp
 		/// <returns></returns>
 		public static async Task ToggleFirstLastPiecePrio(List<string> hashes)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|'))
-			};
-
-			await Post(client, "/command/toggleFirstLastPiecePrio", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|'));
+			await Post(client, "/command/toggleFirstLastPiecePrio", content);
 		}
 
 		/// <summary>
@@ -989,13 +876,8 @@ namespace qBittorrentSharp
 		/// <param name="activate">Whether to activate first/last piece priority of torrents.</param>
 		public static async Task SetForceStart(List<string> hashes, bool activate)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
-				new KeyValuePair<string, string>("value", activate.ToString().ToLower())
-			};
-
-			await Post(client, "/command/setForceStart", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|') + "&value=" + activate.ToString().ToLower());
+			await Post(client, "/command/setForceStart", content);
 		}
 
 		/// <summary>
@@ -1006,13 +888,8 @@ namespace qBittorrentSharp
 		/// <returns></returns>
 		public static async Task SetSuperSeeding(List<string> hashes, bool activate)
 		{
-			var content = new[]
-			{
-				new KeyValuePair<string, string>("hashes", ListToString(hashes, '|')),
-				new KeyValuePair<string, string>("value", activate.ToString().ToLower())
-			};
-
-			await Post(client, "/command/setSuperSeeding", new FormUrlEncodedContent(content));
+			var content = ToStringContent("hashes=" + ListToString(hashes, '|') + "&value=" + activate.ToString().ToLower());
+			await Post(client, "/command/setSuperSeeding", content);
 		}
 
 		private static void RaiseDisconnectedEvent()
